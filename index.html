@@ -140,12 +140,12 @@
     .hero__visual {
       order: -1;
       position: relative;
-      width: 100%;
+      box-sizing: border-box;
+      width: min(100%, min(88vmin, 560px));
       max-width: 100%;
       min-width: 0;
-      aspect-ratio: 4 / 5;
-      max-height: min(58vh, 480px);
-      min-height: 220px;
+      margin-inline: auto;
+      aspect-ratio: 1 / 1;
       border-radius: var(--radius-xl);
       overflow: hidden;
       box-shadow: var(--shadow-lift);
@@ -156,66 +156,27 @@
     @media (min-width: 960px) {
       .hero__visual {
         order: 0;
-        flex: 1.05;
-        aspect-ratio: auto;
-        min-height: min(520px, 70vh);
-        max-height: min(78vh, 640px);
-        height: min(78vh, 640px);
+        flex: 0 0 auto;
+        width: min(100%, min(72vmin, 520px));
       }
     }
 
-    .hero__collage {
+    .hero__picture {
       position: absolute;
       inset: 0;
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 3px;
-      background: rgba(42, 38, 48, 0.08);
     }
 
-    .hero__collage-cell {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero__collage-cell:first-child {
-      grid-row: span 2;
-    }
-
-    .hero__collage-cell img {
+    .hero__picture img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
-      transform: scale(1.02);
+      object-fit: contain;
+      object-position: center center;
+      transform: scale(1.01);
       transition: transform 6s var(--ease);
     }
 
-    .hero__visual:hover .hero__collage-cell img {
-      transform: scale(1.06);
-    }
-
-    /* Мобильный: одно стабильное фото */
-    .hero__mobile-static {
-      display: none;
-      position: absolute;
-      inset: 0;
-    }
-
-    .hero__mobile-static img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-    }
-
-    @media (max-width: 959px) {
-      .hero__collage {
-        display: none;
-      }
-      .hero__mobile-static {
-        display: block;
-      }
+    .hero__visual:hover .hero__picture img {
+      transform: scale(1.04);
     }
 
     .hero__shine {
@@ -686,43 +647,16 @@
         </div>
 
         <div class="hero__visual" aria-hidden="true">
-          <div class="hero__mobile-static">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=85" alt="" width="900" height="1125" loading="eager" decoding="async">
-          </div>
-          <div class="hero__collage">
-            <div class="hero__collage-cell">
-              <img
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&h=1000&q=82"
-                alt=""
-                width="800"
-                height="1000"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-              >
-            </div>
-            <div class="hero__collage-cell">
-              <img
-                src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&h=750&q=82"
-                alt=""
-                width="600"
-                height="750"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-              >
-            </div>
-            <div class="hero__collage-cell">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=600&h=750&q=82"
-                alt=""
-                width="600"
-                height="750"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-              >
-            </div>
+          <div class="hero__picture">
+            <img
+              src="hero-page1.png"
+              alt=""
+              width="1080"
+              height="1080"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            >
           </div>
           <div class="hero__shine"></div>
         </div>
