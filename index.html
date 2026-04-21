@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <title>Какой тебе подходит нейрообраз?</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -579,7 +579,7 @@
       pointer-events: auto;
     }
 
-    @media (min-width: 560px) {
+    @media (min-width: 769px) {
       .booking-overlay {
         align-items: center;
         padding: 1.5rem;
@@ -609,7 +609,7 @@
       transition: transform 0.45s var(--ease);
     }
 
-    @media (min-width: 560px) {
+    @media (min-width: 769px) {
       .booking-panel {
         border-radius: var(--radius-xl);
         transform: translateY(24px) scale(0.96);
@@ -623,7 +623,7 @@
       transform: translateY(0);
     }
 
-    @media (min-width: 560px) {
+    @media (min-width: 769px) {
       .booking-overlay.is-open .booking-panel {
         transform: translateY(0) scale(1);
         opacity: 1;
@@ -636,6 +636,41 @@
       flex: 1 1 auto;
       min-height: 0;
       overflow: hidden;
+    }
+
+    /* Мобильная форма: высота экрана, скролл полей, кнопка всегда в зоне видимости + visualViewport (см. JS) */
+    @media (max-width: 768px) {
+      .booking-overlay {
+        align-items: stretch;
+        justify-content: flex-end;
+        padding: max(0.35rem, env(safe-area-inset-top, 0px)) 0 max(0.25rem, env(safe-area-inset-bottom, 0px)) 0;
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
+      }
+
+      .booking-overlay.booking-overlay--vv {
+        inset: unset;
+        padding: 0;
+        padding-left: env(safe-area-inset-left, 0px);
+        padding-right: env(safe-area-inset-right, 0px);
+      }
+
+      .booking-panel {
+        width: 100%;
+        max-width: 100%;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        max-height: min(90vh, 90dvh, calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 0.5rem));
+        flex: 0 1 auto;
+      }
+
+      .booking-overlay.booking-overlay--vv .booking-panel {
+        max-height: 100%;
+      }
+
+      #booking-flow {
+        min-height: 0;
+        max-height: 100%;
+      }
     }
 
     .booking-close {
@@ -749,23 +784,6 @@
       line-height: 1.5;
     }
 
-    @media (max-width: 559px) {
-      .booking-textarea {
-        min-height: 72px;
-      }
-
-      .booking-head {
-        padding-top: 1.2rem;
-        padding-bottom: 0.85rem;
-      }
-
-      #booking-submit {
-        min-height: 52px;
-        font-size: 0.9375rem;
-        padding-inline: 1rem;
-      }
-    }
-
     .booking-input:focus,
     .booking-select:focus,
     .booking-textarea:focus {
@@ -817,6 +835,65 @@
       cursor: not-allowed;
       transform: none;
       filter: none;
+    }
+
+    @media (max-width: 768px) {
+      .booking-close {
+        z-index: 6;
+      }
+
+      .booking-head {
+        padding: 1rem 3rem 0.75rem 1.1rem;
+        flex-shrink: 0;
+      }
+
+      .booking-scroll {
+        padding: 0.85rem 1.1rem 0.75rem;
+        flex: 1 1 auto;
+        min-height: 0;
+      }
+
+      .booking-field {
+        margin-bottom: 0.95rem;
+      }
+
+      .booking-input,
+      .booking-select,
+      .booking-textarea {
+        font-size: 16px;
+      }
+
+      .booking-textarea {
+        min-height: 72px;
+        max-height: min(200px, 32vh);
+      }
+
+      .booking-actions {
+        position: relative;
+        z-index: 4;
+        flex-shrink: 0;
+        padding: 0.65rem 1.1rem;
+        padding-bottom: max(
+          1.15rem,
+          calc(env(safe-area-inset-bottom, 0px) + 0.85rem),
+          env(keyboard-inset-height, 0px)
+        );
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(250, 247, 242, 0.99) 28%, rgba(255, 255, 255, 0.98) 100%);
+        box-shadow: 0 -10px 32px rgba(42, 38, 48, 0.08);
+      }
+
+      #booking-submit {
+        min-height: 56px;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        border-radius: 999px;
+        box-shadow: 0 14px 40px rgba(111, 93, 130, 0.42);
+      }
+
+      #booking-submit:active {
+        transform: scale(0.98);
+      }
     }
 
     .booking-success {
@@ -1359,9 +1436,63 @@
       function showBookingSuccess() {
         bookingFlow.style.display = "none";
         bookingSuccess.classList.add("is-visible");
+        window.requestAnimationFrame(function () {
+          syncBookingVisualViewport();
+        });
         window.setTimeout(function () {
           bookingSuccessClose.focus();
         }, 80);
+      }
+
+      function isBookingMobileViewportLock() {
+        return window.matchMedia("(max-width: 768px)").matches;
+      }
+
+      function syncBookingVisualViewport() {
+        if (!bookingOverlay.classList.contains("is-open") || !isBookingMobileViewportLock()) {
+          bookingOverlay.classList.remove("booking-overlay--vv");
+          bookingOverlay.style.removeProperty("top");
+          bookingOverlay.style.removeProperty("left");
+          bookingOverlay.style.removeProperty("width");
+          bookingOverlay.style.removeProperty("height");
+          return;
+        }
+        var vv = window.visualViewport;
+        if (!vv) {
+          return;
+        }
+        bookingOverlay.classList.add("booking-overlay--vv");
+        bookingOverlay.style.top = Math.round(vv.offsetTop) + "px";
+        bookingOverlay.style.left = Math.round(vv.offsetLeft) + "px";
+        bookingOverlay.style.width = Math.round(vv.width) + "px";
+        bookingOverlay.style.height = Math.round(vv.height) + "px";
+      }
+
+      function onBookingVisualViewportEvent() {
+        syncBookingVisualViewport();
+      }
+
+      function attachBookingVisualViewport() {
+        syncBookingVisualViewport();
+        if (window.visualViewport) {
+          window.visualViewport.addEventListener("resize", onBookingVisualViewportEvent);
+          window.visualViewport.addEventListener("scroll", onBookingVisualViewportEvent);
+        }
+        window.addEventListener("resize", onBookingVisualViewportEvent);
+        window.setTimeout(syncBookingVisualViewport, 350);
+      }
+
+      function detachBookingVisualViewport() {
+        if (window.visualViewport) {
+          window.visualViewport.removeEventListener("resize", onBookingVisualViewportEvent);
+          window.visualViewport.removeEventListener("scroll", onBookingVisualViewportEvent);
+        }
+        window.removeEventListener("resize", onBookingVisualViewportEvent);
+        bookingOverlay.classList.remove("booking-overlay--vv");
+        bookingOverlay.style.removeProperty("top");
+        bookingOverlay.style.removeProperty("left");
+        bookingOverlay.style.removeProperty("width");
+        bookingOverlay.style.removeProperty("height");
       }
 
       function openBookingModal() {
@@ -1377,6 +1508,9 @@
         document.body.classList.add("booking-modal-open");
         window.requestAnimationFrame(function () {
           bookingOverlay.classList.add("is-open");
+          window.requestAnimationFrame(function () {
+            attachBookingVisualViewport();
+          });
         });
         window.setTimeout(function () {
           fieldName.focus();
@@ -1387,6 +1521,7 @@
         if (!bookingOverlay.classList.contains("is-open")) {
           return;
         }
+        detachBookingVisualViewport();
         bookingOverlay.classList.remove("is-open");
         document.body.classList.remove("booking-modal-open");
         window.setTimeout(function () {
